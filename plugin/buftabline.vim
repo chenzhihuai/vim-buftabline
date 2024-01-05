@@ -55,6 +55,7 @@ function s:SID()
 	return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
 
+let s:nums=["⁰","¹","²","³","⁴","⁵","⁶","⁷","⁸","⁹"]
 let s:dirsep = fnamemodify(getcwd(),':p')[-1:]
 let s:centerbuf = winbufnr(0)
 let s:tablineat = has('tablineat')
@@ -75,7 +76,7 @@ function! buftabline#render()
 	let currentbuf = winbufnr(0)
 	let screen_num = 0
 	for bufnum in bufnums
-		let screen_num = show_num ? bufnum : show_ord ? screen_num + 1 : ''
+		let screen_num = show_num ? s:nums[bufnum % 10] : show_ord ? s:nums[screen_num % 10] + 1 : ''
 		let tab = { 'num': bufnum, 'pre': '' }
 		let tab.hilite = currentbuf == bufnum ? 'Current' : bufwinnr(bufnum) > 0 ? 'Active' : 'Hidden'
 		if currentbuf == bufnum | let [centerbuf, s:centerbuf] = [bufnum, bufnum] | endif
