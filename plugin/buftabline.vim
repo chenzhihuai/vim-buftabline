@@ -76,7 +76,7 @@ function! buftabline#render()
 	let currentbuf = winbufnr(0)
 	let screen_num = 0
 	for bufnum in bufnums
-		let screen_num = show_num ? s:nums[bufnum % 10] : show_ord ? s:nums[screen_num % 10] + 1 : ''
+		let screen_num = show_num ? bufnum  : show_ord ? screen_num + 1 : ''
 		let tab = { 'num': bufnum, 'pre': '' }
 		let tab.hilite = currentbuf == bufnum ? 'Current' : bufwinnr(bufnum) > 0 ? 'Active' : 'Hidden'
 		if currentbuf == bufnum | let [centerbuf, s:centerbuf] = [bufnum, bufnum] | endif
@@ -85,7 +85,7 @@ function! buftabline#render()
 			let tab.path = fnamemodify(bufpath, ':p:~:.')
 			let tab.sep = strridx(tab.path, s:dirsep, strlen(tab.path) - 2) " keep trailing dirsep
 			let tab.label = tab.path[tab.sep + 1:]
-			let pre = screen_num
+            let pre = screen_num == '' ? '' : s:nums[screen_num % 10]
 			if getbufvar(bufnum, '&mod')
 				let tab.hilite = 'Modified' . tab.hilite
 				if show_mod | let pre = '+' . pre | endif
