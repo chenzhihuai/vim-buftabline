@@ -56,6 +56,13 @@ function s:SID()
 endfunction
 
 let s:nums=["⁰","¹","²","³","⁴","⁵","⁶","⁷","⁸","⁹"]
+function! s:upperscript(num)
+    if a:num >= 10 
+        return s:nums[a:num / 10] + s:nums[a:num%10]
+    else
+        return s:nums[a:num%10]
+    endif
+endfunction
 let s:dirsep = fnamemodify(getcwd(),':p')[-1:]
 let s:centerbuf = winbufnr(0)
 let s:tablineat = has('tablineat')
@@ -85,12 +92,13 @@ function! buftabline#render()
 			let tab.path = fnamemodify(bufpath, ':p:~:.')
 			let tab.sep = strridx(tab.path, s:dirsep, strlen(tab.path) - 2) " keep trailing dirsep
 			let tab.label = tab.path[tab.sep + 1:]
-            let pre = screen_num == '' ? '' : s:nums[screen_num % 10]
+            let pre = screen_num == '' ? '' : s:upperscript(screen_num)
+            "let pre = screen_num == '' ? '' : '[' . screen_num .'] '
 			if getbufvar(bufnum, '&mod')
 				let tab.hilite = 'Modified' . tab.hilite
 				if show_mod | let pre = '+' . pre | endif
 			endif
-			if strlen(pre) | let tab.pre = pre . ' ' | endif
+			if strlen(pre) | let tab.pre = pre | endif
 			let tabs_per_tail[tab.label] = get(tabs_per_tail, tab.label, 0) + 1
 			let path_tabs += [tab]
 		elseif -1 < index(['nofile','acwrite'], getbufvar(bufnum, '&buftype')) " scratch buffer
@@ -125,7 +133,8 @@ function! buftabline#render()
 	let lpad_width = strwidth(lpad)
 	for tab in tabs
 		let tab.width = lpad_width + strwidth(tab.pre) + strwidth(tab.label) + 1
-		let tab.label = lpad . tab.pre . substitute(strtrans(tab.label), '%', '%%', 'g') . ' '
+        "let tab.label = lpad . substitute(strtrans(tab.label), '%', '%%', 'g') . tab.pre . ' '
+        let tab.label = lpad . tab.pre . substitute(strtrans(tab.label), '%', '%%', 'g') . ' '
 		if centerbuf == tab.num
 			let halfwidth = tab.width / 2
 			let lft.width += halfwidth
